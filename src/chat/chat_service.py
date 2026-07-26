@@ -9,7 +9,7 @@ def get_ai_response(username, message):
     print("User:", username)
     print("Message:", message)
 
-    with SqliteSaver.from_conn_string("chat_memory.db") as checkpointer:
+    with SqliteSaver.from_conn_string("/home/chat_memory.db") as checkpointer:
 
         print("Creating agent...")
         agent = create_chat_agent(checkpointer)
@@ -47,7 +47,7 @@ def start_chat():
     print("Your conversation has been loaded.")
     print("Type 'exit' to quit.\n")
 
-    with SqliteSaver.from_conn_string("chat_memory.db") as checkpointer:
+    with SqliteSaver.from_conn_string("/home/chat_memory.db") as checkpointer:
 
         agent = create_chat_agent(checkpointer)
 
