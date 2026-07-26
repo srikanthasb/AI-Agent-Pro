@@ -1,3 +1,9 @@
-from src.chat.chat_service import start_chat
+import uvicorn
 
-start_chat()
+if __name__ == "__main__":
+    uvicorn.run(
+        "src.api.api:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True,
+    )
