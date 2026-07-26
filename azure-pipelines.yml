@@ -122,22 +122,51 @@ stages:
   jobs:
 
   - job: Docker
+    displayName: "Build & Push Docker Image"
+
+    pool:
+      vmImage: ubuntu-latest
 
     steps:
 
-    - script: |
-        docker version
-        docker buildx version
-      displayName: Verify Docker
-
-    - task: Docker@2
-      displayName: Build Docker Image
+    - task: AzureCLI@2
+      displayName: Login to Azure and Push Docker Image
 
       inputs:
-        command: build
-        Dockerfile: Dockerfile
-        repository: ai-agent-pro
+        azureSubscription: 'AI-Agent-ServiceConnection'
+        scriptType: bash
+        scriptLocation: inlineScript
 
-        tags: |
-          $(Build.BuildId)
-          latest
+        inlineScript: |
+
+          echo "======================================"
+          echo "Logging into Azure..."
+          echo "======================================"
+
+          az account show
+
+          echo "======================================"
+          echo "Logging into Azure Container Registry..."
+          echo "======================================"
+
+          az acr login --name aiagentregistry2027
+
+          echo "======================================"
+          echo "Building Docker Image..."
+          echo "======================================"
+
+          docker build \
+            -t aiagentregistry2027.azurecr.io/ai-agent:latest \
+            -t aiagentregistry2027.azurecr.io/ai-agent:$(Build.BuildId) .
+
+          echo "======================================"
+          echo "Pushing Docker Images..."
+          echo "======================================"
+
+          docker push aiagentregistry2027.azurecr.io/ai-agent:latest
+
+          docker push aiagentregistry2027.azurecr.io/ai-agent:$(Build.BuildId)
+
+          echo "======================================"
+          echo "Docker Push Completed Successfully"
+          echo "======================================"
