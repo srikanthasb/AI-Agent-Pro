@@ -157,15 +157,15 @@ stages:
 
           docker build \
             -t aiagentregistry2027.azurecr.io/ai-agent:latest \
-            -t aiagentregistry2027.azurecr.io/ai-agent:$(Build.BuildId) .
+            -t aiagentregistry2027.azurecr.io/ai-agent:$(Build.BuildId) . || exit 1
 
           echo "======================================"
           echo "Pushing Docker Images..."
           echo "======================================"
 
-          docker push aiagentregistry2027.azurecr.io/ai-agent:latest
+          docker push aiagentregistry2027.azurecr.io/ai-agent:latest || exit 1
 
-          docker push aiagentregistry2027.azurecr.io/ai-agent:$(Build.BuildId)
+          docker push aiagentregistry2027.azurecr.io/ai-agent:$(Build.BuildId) || exit 1
 
           echo "======================================"
           echo "Docker Push Completed Successfully"
