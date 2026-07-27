@@ -6,7 +6,11 @@ from src.tools.maps_tool import get_route
 
 from src.tools.voice import voice_supported
 
-API_URL = "https://ai-agent-pro-webapp27-acgghkdsbuabgufn.southindia-01.azurewebsites.net/chat"
+import os
+
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
+
+API_URL = f"{BACKEND_URL}/chat"
 
 SPEECH_AVAILABLE = voice_supported()
 
