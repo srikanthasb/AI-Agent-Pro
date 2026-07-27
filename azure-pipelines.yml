@@ -7,6 +7,14 @@ pool:
 variables:
   pythonVersion: '3.12'
 
+  acrName: aiagentregistry2027
+
+  backendRepository: ai-agent
+
+  frontendRepository: ai-agent-ui
+
+  azureServiceConnection: AI-Agent-ServiceConnection
+
 ############################################################
 # BUILD
 ############################################################
@@ -115,14 +123,19 @@ stages:
 ############################################################
 
 - stage: Package
-  displayName: "Package"
+  displayName: Package
 
   dependsOn: Testing
 
   jobs:
 
-  - job: Docker
-    displayName: "Build & Push Docker Image"
+  ##########################################################
+  # Backend Image
+  ##########################################################
+
+  - job: BackendImage
+
+    displayName: Build Backend Docker Image
 
     pool:
       vmImage: ubuntu-latest
@@ -130,80 +143,66 @@ stages:
     steps:
 
     - task: AzureCLI@2
-      displayName: Login to Azure and Push Docker Image
+
+      displayName: Build & Push Backend
 
       inputs:
-        azureSubscription: 'AI-Agent-ServiceConnection'
+
+        azureSubscription: $(azureServiceConnection)
+
         scriptType: bash
+
         scriptLocation: inlineScript
 
         inlineScript: |
 
-          echo "======================================"
-          echo "Logging into Azure..."
-          echo "======================================"
-
-          az account show
-
-          echo "======================================"
-          echo "Logging into Azure Container Registry..."
-          echo "======================================"
-
-          az acr login --name aiagentregistry2027
-
-          echo "======================================"
-          echo "Building Docker Image..."
-          echo "======================================"
+          az acr login --name $(acrName)
 
           docker build \
+            -f docker/backend.Dockerfile \
             -t aiagentregistry2027.azurecr.io/ai-agent:latest \
             -t aiagentregistry2027.azurecr.io/ai-agent:$(Build.BuildId) . || exit 1
-
-          echo "======================================"
-          echo "Pushing Docker Images..."
-          echo "======================================"
 
           docker push aiagentregistry2027.azurecr.io/ai-agent:latest || exit 1
 
           docker push aiagentregistry2027.azurecr.io/ai-agent:$(Build.BuildId) || exit 1
 
-          echo "======================================"
-          echo "Docker Push Completed Successfully"
-          echo "======================================"
-    
+  ##########################################################
+  # Frontend Image
+  ##########################################################
+
+  - job: FrontendImage
+
+    displayName: Build Frontend Docker Image
+
+    dependsOn: BackendImage
+
+    pool:
+      vmImage: ubuntu-latest
+
+    steps:
+
     - task: AzureCLI@2
-      displayName: Build and Push Frontend Image
+
+      displayName: Build & Push Frontend
 
       inputs:
-        azureSubscription: 'AI-Agent-ServiceConnection'
+
+        azureSubscription: AI-Agent-ServiceConnection
+
         scriptType: bash
+
         scriptLocation: inlineScript
 
         inlineScript: |
 
-          echo "======================================"
-          echo "Login to ACR"
-          echo "======================================"
-
           az acr login --name aiagentregistry2027
 
-          echo "======================================"
-          echo "Building Frontend Image"
-          echo "======================================"
-
           docker build \
-            -f Dockerfile.frontend \
+            -f docker/frontend.Dockerfile \
             -t aiagentregistry2027.azurecr.io/ai-agent-ui:latest \
             -t aiagentregistry2027.azurecr.io/ai-agent-ui:$(Build.BuildId) . || exit 1
-
-          echo "======================================"
-          echo "Pushing Frontend Image"
-          echo "======================================"
 
           docker push aiagentregistry2027.azurecr.io/ai-agent-ui:latest || exit 1
 
           docker push aiagentregistry2027.azurecr.io/ai-agent-ui:$(Build.BuildId) || exit 1
-
-          echo "======================================"
-          echo "Frontend Image Uploaded"
-          echo "======================================"

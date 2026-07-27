@@ -1,6 +1,8 @@
 import requests
 
-API_KEY = "6fe20cbef893468b813185107261507"
+import os
+
+API_KEY = os.getenv("WEATHER_API_KEY")
 
 
 def get_weather(city: str):
