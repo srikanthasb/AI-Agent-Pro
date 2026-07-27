@@ -160,12 +160,12 @@ stages:
 
           docker build \
             -f docker/backend.Dockerfile \
-            -t aiagentregistry2027.azurecr.io/ai-agent:latest \
-            -t aiagentregistry2027.azurecr.io/ai-agent:$(Build.BuildId) . || exit 1
+            -t $(acrName).azurecr.io/ai-agent:latest \
+            -t $(acrName).azurecr.io/ai-agent:$(Build.BuildId) . || exit 1
 
-          docker push aiagentregistry2027.azurecr.io/ai-agent:latest || exit 1
+          docker push $(acrName).azurecr.io/ai-agent:latest || exit 1
 
-          docker push aiagentregistry2027.azurecr.io/ai-agent:$(Build.BuildId) || exit 1
+          docker push $(acrName).azurecr.io/ai-agent:$(Build.BuildId) || exit 1
 
   ##########################################################
   # Frontend Image
@@ -200,9 +200,9 @@ stages:
 
           docker build \
             -f docker/frontend.Dockerfile \
-            -t aiagentregistry2027.azurecr.io/ai-agent-ui:latest \
-            -t aiagentregistry2027.azurecr.io/ai-agent-ui:$(Build.BuildId) . || exit 1
+            -t $(acrName).azurecr.io/ai-agent-ui:latest \
+            -t $(acrName).azurecr.io/ai-agent-ui:$(Build.BuildId) . || exit 1
 
-          docker push aiagentregistry2027.azurecr.io/ai-agent-ui:latest || exit 1
+          docker push $(acrName).azurecr.io/ai-agent-ui:latest || exit 1
 
-          docker push aiagentregistry2027.azurecr.io/ai-agent-ui:$(Build.BuildId) || exit 1
+          docker push $(acrName).azurecr.io/ai-agent-ui:$(Build.BuildId) || exit 1
