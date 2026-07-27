@@ -156,6 +156,18 @@ stages:
 
         inlineScript: |
 
+          echo "========== PWD =========="
+          pwd
+
+          echo "========== ROOT =========="
+          ls -la
+
+          echo "========== FIND =========="
+          find . -maxdepth 2
+
+          echo "========== DOCKER =========="
+          ls -la docker || true
+
           az acr login --name $(acrName)
 
           docker build \
