@@ -156,7 +156,6 @@ stages:
           echo "======================================"
 
           docker build \
-            -f f Dockerfile.backend \
             -t aiagentregistry2027.azurecr.io/ai-agent:latest \
             -t aiagentregistry2027.azurecr.io/ai-agent:$(Build.BuildId) . || exit 1
 
