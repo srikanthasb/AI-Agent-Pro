@@ -1,11 +1,12 @@
 import streamlit as st
 import folium
 from streamlit_folium import st_folium
-
-from src.chat.chat_service import get_ai_response
+import requests
 from src.tools.maps_tool import get_route
 
 from src.tools.voice import voice_supported
+
+API_URL = "https://ai-agent-pro-webapp27-acgghkdsbuabgufn.southindia-01.azurewebsites.net/chat"
 
 SPEECH_AVAILABLE = voice_supported()
 
@@ -253,10 +254,24 @@ if prompt:
 
         with st.spinner("Thinking..."):
 
-            answer = get_ai_response(
-                username=username,
-                message=prompt,
-            )
+            try:
+
+                response = requests.post(
+                    API_URL,
+                    json={
+                        "username": username,
+                        "message": prompt,
+                    },
+                    timeout=120,
+                )
+
+                response.raise_for_status()
+
+                answer = response.json()["response"]
+
+            except Exception as e:
+
+                answer = f"❌ Unable to contact AI Backend.\n\n{e}"
 
         st.session_state.messages.append(
             {
